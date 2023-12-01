@@ -11,12 +11,12 @@ export default class BrowseVehicles extends Vue {
 </script>
 
 <template>
-
+  <!--TODO: Fields are not currently auto filling-->
   <b-form>
     <!--  Make-->
     <b-form-group class="m-2" label="Make">
       <b-input-group>
-<!--        TODO: Add loop logic for getting all entries from the db-->
+        <!--        TODO: Add loop logic for getting all entries from the db-->
         <b-form-input
           :readonly="true"
           v-model="car.make"

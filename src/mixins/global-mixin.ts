@@ -9,9 +9,9 @@
 // mixins.js
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
-const BASE_API = 'http://localhost:3006';
+const BASE_API = 'http://localhost:3000';
 const STUDENT_API = `${BASE_API}/students`;
-const PRODUCT_API = `${BASE_API}/products`;
+const CAR_API = `${BASE_API}/cars`;
 
 const FETCH_HEADERS:any = {
   'X-Requested-With': 'XmlHttpRequest',
@@ -29,7 +29,7 @@ export default class GlobalMixin extends Vue {
 
   STUDENT_API = STUDENT_API
 
-  PRODUCT_API = PRODUCT_API
+  CAR_API = CAR_API
 
   // regular data variable
   isBusy = false
