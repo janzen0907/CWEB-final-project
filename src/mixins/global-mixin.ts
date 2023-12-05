@@ -20,19 +20,19 @@ const FETCH_HEADERS:any = {
 
 @Component
 export default class GlobalMixin extends Vue {
-  @Prop(Boolean) readonly debug!:boolean
+  @Prop(Boolean) readonly debug!:boolean;
 
-  @Prop(Boolean) readonly disabled!:boolean
+  @Prop(Boolean) readonly disabled!:boolean;
 
   // immutable constant data variables
-  BASE_API = BASE_API
+  BASE_API = BASE_API;
 
-  STUDENT_API = STUDENT_API
+  STUDENT_API = STUDENT_API;
 
-  CAR_API = CAR_API
+  CAR_API = CAR_API;
 
   // regular data variable
-  isBusy = false
+  isBusy = false;
 
   // Declared as computed property getter
   get isDisabled():boolean {

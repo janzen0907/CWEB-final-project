@@ -34,7 +34,7 @@ export default class BrowseVehicles extends Mixins(GlobalMixin) {
     { key: 'drivetrain', sortable: true },
     { key: 'numUpVotes', sortable: true },
     { key: 'numDownVotes', sortable: true },
-  ]
+  ];
 }
 </script>
 

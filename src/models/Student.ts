@@ -12,22 +12,22 @@ const emailOptions = {
 
 export default class Student {
   @IsOptional()
-  id:number|undefined;
+    id:number|undefined;
 
   @Length(1, 50, { message: 'Given Name must be from $constraint1 to $constraint2 characters ' })
-  givenName='';
+    givenName = '';
 
   @MaxLength(50, { message: 'Family Name must be at most $constraint1 characters ' })
   @IsOptional()
-  familyName ='';
+    familyName = '';
 
   @IsEmail(emailOptions, { message: 'Email must be in valid format' })
-  email = '';
+    email = '';
 
   @IsPhoneNumber('CA', { message: 'Phone number must be in Canadian format' }) // CA is the code code for Canada
-  phone='';
+    phone = '';
 
   @MaxLength(200, { message: 'Address must be at most $constraint1 characters ' })
   @IsOptional()
-  address = '';
+    address = '';
 }

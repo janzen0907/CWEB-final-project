@@ -65,7 +65,7 @@ USING short cuts:
           no-provider-filtering>
           <template #table-busy>
             <div class="text-center text-danger my-2">
-              <b-spinner class="align-middle"/>
+              <b-spinner class="align-middle" />
               <strong>Loading...</strong>
             </div>
           </template>
@@ -102,7 +102,7 @@ import Student from '@/models/Student';
 export default class StudentView extends Mixins(GlobalMixin) {
   $refs!: {
     studentTable: BTable
-  }
+  };
 
   provider(ctx:BvTableCtxObject):Promise<any> {
     // return fetch('' + ctx.apiUrl).then(res => res.json())
@@ -110,21 +110,21 @@ export default class StudentView extends Mixins(GlobalMixin) {
   }
 
   // data variable
-  selectedStudent:Student = new Student()
+  selectedStudent:Student = new Student();
 
   // computed from b-table localItems
   get students() {
     return this.$refs.studentTable.localItems;
   }
 
-  fields=[
+  fields = [
     { key: 'id', sortable: true },
     { key: 'givenName', sortable: true },
     { key: 'familyName', sortable: true },
     { key: 'email', sortable: true },
     { key: 'phone', sortable: true },
     { key: 'address', sortable: true },
-  ]
+  ];
 
   // region METHODS
 

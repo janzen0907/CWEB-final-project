@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Products</h1>
-    <b-table :items="provider"/>
+    <b-table :items="provider" />
   </div>
 </template>
 

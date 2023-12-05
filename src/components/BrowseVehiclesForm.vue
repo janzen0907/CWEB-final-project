@@ -60,19 +60,19 @@ export default class BrowseVehicles extends Vue {
               <b-col cols="6">
                 <label for="rating-inline">Seller Rating:</label>
                 <!--                TODO: Get rating from DB per seller-->
-                <b-form-rating id="rating-inline" inline value="4" :readonly="true"/>
+                <b-form-rating id="rating-inline" inline value="4" :readonly="true" />
               </b-col>
             </b-row>
             <b-row>
               <b-col cols="6">
                 <b-button class="m-3">
-                  <b-icon icon="hand-thumbs-up"/>
+                  <b-icon icon="hand-thumbs-up" />
                   <!--                  Insert number of upvotes here-->
                 </b-button>
               </b-col>
               <b-col cols="6">
                 <b-button class="m-3">
-                  <b-icon icon="hand-thumbs-down"/>
+                  <b-icon icon="hand-thumbs-down" />
                 </b-button>
               </b-col>
             </b-row>
