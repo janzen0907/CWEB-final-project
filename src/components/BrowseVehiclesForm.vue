@@ -1,6 +1,7 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import Car from '@/models/Car';
+import Trader from '@/models/Trader';
 
 @Component({})
 export default class BrowseVehicles extends Vue {
@@ -24,18 +25,30 @@ export default class BrowseVehicles extends Vue {
   }
 }
 </script>
-
-<template v-for="carLoop in cars">
+<!--<template v-for="carLoop in cars">-->
+<template>
   <div>
-    <b-card>
-      <!--      <p>Make:</p>-->
-      <b-card-text>
-        {{carLoop.make}}
-      </b-card-text>
+    <h1 class="text-center">Browse Vehicles</h1>
+    <p class="text-center">Welcome to our Browse Vehicles page! Here you can
+      view cars being sold</p>
 
-    <!--    TODO: Add seller information, buttons and upvotes and downvotes-->
-    </b-card>
+    <b-row>
+      <b-col cols="6" v-for="carLoop in cars" :key="carLoop.id">
+        <b-card border-variant="primary">
+          <b-card-text>
+            <p>Make: {{ carLoop.make }}</p>
+            <p>Model: {{ carLoop.model }}</p>
+            <p>Year: {{ carLoop.year }}</p>
+            <p>Kilometers: {{ carLoop.km }}</p>
+            <p>Price: {{ carLoop.price }}</p>
+            <p>Transmission: {{ carLoop.transmission }}</p>
+            <p>Drivetrain: {{ carLoop.drivetrain }}</p>
+          </b-card-text>
+          <!--    TODO: Add seller information, buttons and upvotes and downvotes-->
+          <!--          Going to need another loop for seller information -->
+        </b-card>
+      </b-col>
+    </b-row>
   </div>
 </template>
-
-  <style scoped/>
+<style scoped/>
