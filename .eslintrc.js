@@ -27,7 +27,7 @@ module.exports = {
     'vue/this-in-template': 'error',
     'vue/key-spacing': 'error',
     'vue/keyword-spacing': 'error',
-    'vue/html-closing-bracket-spacing': 'off',
+    'vue/html-closing-bracket-spacing': 'error',
     'vue/html-indent': 'error',
     'vue/html-quotes': 'error',
     'vue/no-spaces-around-equal-signs-in-attribute': 'error',

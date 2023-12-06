@@ -1,7 +1,7 @@
 <template>
   <b-button :variant="variant" @click="$emit('party')">
-    <b-icon :icon="icon" :animation="animation"/>
-    <slot/>
+    <b-icon :icon="icon" :animation="animation" />
+    <slot />
   </b-button>
 </template>
 

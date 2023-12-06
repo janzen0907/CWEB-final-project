@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <HomePage msg="Welcome to our Fun Cars site!"/>
+    <HomePage msg="Welcome to our Fun Cars site!" />
     <b-carousel
       id="cars"
       :interval="4000"

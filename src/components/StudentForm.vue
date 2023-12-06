@@ -183,18 +183,18 @@ import GlobalMixin from '@/mixins/global-mixin';
 
 @Component
 export default class StudentForm extends Mixins(GlobalMixin) {
-  @Prop({ type: Object, validator: (s) => s instanceof Object }) readonly student: any
+  @Prop({ type: Object, validator: (s) => s instanceof Object }) readonly student: any;
 
   $refs!: {
     iconDelete: BIcon
     iconSave : BIcon
-  }
+  };
 
   // region DATA VARIABLES
   // will store a copy of the values from the student declared in the props section
-  tempStudent: Student = new Student()
+  tempStudent: Student = new Student();
 
-  violation: any = {} // will store violation messages that we get from the api
+  violation: any = {}; // will store violation messages that we get from the api
 
   dt = {
     // Display Text - object that stores text to display to the user instead of the attribute names
@@ -203,9 +203,9 @@ export default class StudentForm extends Mixins(GlobalMixin) {
     em: 'Email Address',
     sA: 'Street Address',
     pn: 'Phone Number',
-  }
+  };
 
-  showConfirmDelete = false
+  showConfirmDelete = false;
   // endregion
 
   // region METHODS

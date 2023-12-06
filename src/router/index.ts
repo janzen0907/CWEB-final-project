@@ -20,9 +20,9 @@ const routes: Array<RouteConfig> = [
   },
   /** *******   Add route item for Student View  ********* */
   {
-    path: '/student',
-    name: 'Student',
-    component: () => import('../views/StudentView.vue'),
+    path: '/Sell',
+    name: 'sell',
+    component: () => import('../views/SellView.vue'),
   },
   /** *******   Add route item for Product View  ********* */
   {
