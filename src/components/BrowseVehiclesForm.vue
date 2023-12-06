@@ -1,7 +1,12 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
+
+import oauthSignIn from '@/assets/GoogleAuth';
+
 import Car from '@/models/Car';
 import Trader from '@/models/Trader';
+
+// eslint-disable-next-line import/no-absolute-path,@typescript-eslint/no-var-requires
 
 @Component({})
 export default class BrowseVehicles extends Vue {
@@ -25,16 +30,20 @@ export default class BrowseVehicles extends Vue {
     this.loading = false;
   }
 
-  async fetchTraderData() {
-    const response = await fetch('http://localhost:3000/cars');
-    const data = await response.json();
-    this.traders = data;
-    this.loading = false;
+  // async fetchTraderData() {
+  //   const response = await fetch('http://localhost:3000/traders');
+  //   const data = await response.json();
+  //   this.traders = data;
+  //   this.loading = false;
+  // }
+
+  googleSignIn() {
+    oauthSignIn();
   }
 
   mounted() {
     this.fetchCarData();
-    this.fetchTraderData();
+    // this.fetchTraderData();
   }
 }
 </script>
@@ -59,15 +68,22 @@ export default class BrowseVehicles extends Vue {
             <!--            Can use float right to move it but then its on the same line as seller stuff-->
             <b-row>
               <b-col>
-                <b-button variant="success" size="lg" class="mb-3">Rate this seller</b-button>
+                <b-button variant="success" size="lg" class="mb-3" v-b-modal:modal-1>Rate this
+                  seller
+                </b-button>
+                <b-modal id="modal-1" title="Please Sign In to continue" @ok="googleSignIn">
+                  <p>Please sign in to your Google Account</p>
+                  <!--                  Google sign in method-->
+                  <template #modal-ok>Sign in</template>
+                </b-modal>
               </b-col>
             </b-row>
             <b-row>
-              <b-col cols="6" v-for="trader in traders" :key="trader.id">
+              <b-col cols="6">
                 <!--                Add the seller name from the db here-->
                 <!--                Need to add logic here probably a V-IF. Show edit listing if the -->
                 <!--                car belongs to that person otherwise it can show the edit and rating buttons-->
-                <p>Seller Name: {{trader.name}}</p>
+                <p>Seller Name: {{ carLoop.traderName }}</p>
 
               </b-col>
               <b-col cols="6">

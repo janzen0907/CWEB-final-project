@@ -20,7 +20,7 @@ const routes: Array<RouteConfig> = [
   },
   /** *******   Add route item for Student View  ********* */
   {
-    path: '/Sell',
+    path: '/sell',
     name: 'sell',
     component: () => import('../views/SellView.vue'),
   },
@@ -33,7 +33,9 @@ const routes: Array<RouteConfig> = [
 ];
 
 const router = new VueRouter({
+  mode: 'history',
   routes,
+
 });
 
 export default router;

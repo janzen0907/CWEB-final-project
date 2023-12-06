@@ -1,21 +1,21 @@
 import {
-  IsCurrency, IsNumber, IsOptional, Length, Max, MaxLength, min, Min,
+  IsCurrency, IsNumber, IsOptional, Length, Max, MaxLength, min, Min, ValidateIf,
 } from 'class-validator';
 
 export default class Car {
-  @IsOptional()
-    id!: number|undefined;
+   @IsOptional()
+     id!: number|undefined;
 
   // NOTE: We could change this to a select box of available care makes if time permits
   @Length(1, 50, {
     message: 'Car Make must be from $constraint1 to $constraint2 charecters',
   })
-    make!: string;
+    make = '';
 
   @Length(1, 50, {
     message: 'Car Make must be from $constraint1 to $constraint2 charecters',
   })
-    model!: string;
+    model = '';
 
   @Min(1908, {
     message: 'Car year must be newer than 1908',
@@ -34,14 +34,22 @@ export default class Car {
   @Length(1, 20, {
     message: 'Transmission should be either Manual or Automatic',
   })
-    transmission!: string;
+    transmission = '';
 
   @MaxLength(3, { message: ' Drivetrain should either be FWD, RWD or AWD only' })
-    drivetrain!: string;
+    drivetrain = '';
 
+  @ValidateIf((v) => v.numUpVotes !== undefined)
   @IsOptional()
-    numUpvotes!: number;
+    numUpVotes!: number;
 
+  @ValidateIf((v) => v.numDownVotes !== undefined)
   @IsOptional()
     numDownVotes!: number;
+
+  @IsOptional()
+    traderEmail!: string;
+
+  @IsOptional()
+    traderName!: string;
 }

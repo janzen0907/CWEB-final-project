@@ -21,6 +21,7 @@ module.exports = {
     'vue/max-len': 'off',
     'import/extensions': 'off',
     'import/no-unresolved': 'off',
+    'no-restricted-syntax': 'off',
     'class-methods-use-this': 'off',
     'vue/no-multi-spaces': 'error',
     'vue/attribute-hyphenation': 'error',
