@@ -1,6 +1,7 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
 
+import axios from 'axios';
 import oauthSignIn from '@/assets/GoogleAuth';
 
 import Car from '@/models/Car';
@@ -39,13 +40,79 @@ export default class BrowseVehicles extends Vue {
 
   googleSignIn() {
     oauthSignIn();
+    // Vue.nextTick(() => {
+    // const accessToken = this.getAccessTokenFromUrl();
+    // this.getUserInfo(accessToken);
+    // });
+  }
+
+  // Testing
+  getUserInfo(accessToken: any) {
+    fetch('https://www.googleapis.com/oauth2/v1/userinfo?alt=json', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(`User's Email:${data.email}`);
+        console.log(`User's Name: ${data.name}`);
+        console.log(accessToken);
+
+        // Handle the trader
+        this.handleTrader(data.email, data.name);
+        console.log(data.name, data.email);
+      });
+  }
+
+  async handleTrader(newEmail: string, newName: string) {
+    // Check to see if the user already exists
+    const response = await axios.get('http://localhost:3000/traders', {
+      params: {
+        email: newEmail,
+      },
+    });
+    if (this.traders.email !== newEmail) {
+      await axios.post('http://localhost:3000/traders', {
+        email: newEmail,
+        name: newName,
+      })
+        // We should probably change this eventually but for now just ignore the 500
+        // its because a user with that email is already in the DB
+        .catch((err) => {
+          if (err.response && err.response.status === 500) {
+            console.log('Ignore the error');
+          } else {
+            throw err;
+          }
+        });
+    }
+  }
+
+  // Testing
+  getAccessTokenFromUrl() {
+    // Get the access token for the user from google
+    const hash = window.location.hash.substring(1);
+    const urlParams = new URLSearchParams(hash);
+    const accessToken = urlParams.get('access_token');
+    console.log(`Access Token: ${accessToken}`);
+    return accessToken;
   }
 
   mounted() {
     this.fetchCarData();
+
+    // Testing
+    const accessToken = this.getAccessTokenFromUrl();
+    if (accessToken !== 'null') {
+      this.getUserInfo(accessToken);
+    } else { /* empty */
+    }
+
     // this.fetchTraderData();
   }
 }
+
 </script>
 <!--<template v-for="carLoop in cars">-->
 <template>

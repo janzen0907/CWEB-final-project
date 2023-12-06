@@ -16,9 +16,13 @@ export default function oauthSignIn() {
   // Parameters to pass to OAuth 2.0 endpoint.
   const params: any = {
     client_id: '258639327-m885274s4g563cvhf639df70sqt30oo2.apps.googleusercontent.com',
-    redirect_uri: 'http://localhost:8080/',
+    redirect_uri: 'http://localhost:8080/browse',
     response_type: 'token',
-    scope: 'https://www.googleapis.com/auth/drive.metadata.readonly',
+    // Get the email and the name from google of the user signing in.
+    // scope: 'https://www.googleapis.com/auth/drive.metadata.readonly '
+    //   + 'https://www.googleapis.com/auth/userinfo.email '
+    //   + 'https://www.googleapis.com/auth/userinfo.profile',
+    scope: ['email'],
     include_granted_scopes: 'true',
     state: 'pass-through value',
   };
