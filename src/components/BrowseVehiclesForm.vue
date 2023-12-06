@@ -9,7 +9,12 @@ export default class BrowseVehicles extends Vue {
   @Prop({ type: Car, validator: (c) => c instanceof Car })
   readonly car!: Car;
 
+  @Prop({ type: Trader, validator: (t) => t instanceof Trader })
+  readonly trader!: Trader;
+
   cars: Car = new Car();
+
+  traders: Trader = new Trader();
 
   loading = true;
 
@@ -20,8 +25,16 @@ export default class BrowseVehicles extends Vue {
     this.loading = false;
   }
 
+  async fetchTraderData() {
+    const response = await fetch('http://localhost:3000/cars');
+    const data = await response.json();
+    this.traders = data;
+    this.loading = false;
+  }
+
   mounted() {
     this.fetchCarData();
+    this.fetchTraderData();
   }
 }
 </script>
@@ -50,11 +63,11 @@ export default class BrowseVehicles extends Vue {
               </b-col>
             </b-row>
             <b-row>
-              <b-col cols="6">
+              <b-col cols="6" v-for="trader in traders" :key="trader.id">
                 <!--                Add the seller name from the db here-->
                 <!--                Need to add logic here probably a V-IF. Show edit listing if the -->
                 <!--                car belongs to that person otherwise it can show the edit and rating buttons-->
-                <p>Seller Name:</p>
+                <p>Seller Name: {{trader.name}}</p>
 
               </b-col>
               <b-col cols="6">
