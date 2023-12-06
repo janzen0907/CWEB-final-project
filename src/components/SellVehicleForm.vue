@@ -22,6 +22,16 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
 
   violation: any = {};
 
+  dt = {
+    mk: 'make',
+    md: 'model',
+    yr: 'year',
+    km: 'km',
+    pr: 'price',
+    tr: 'transmission',
+    dt: 'drivetrain',
+  };
+
   data() {
     return {
       make: '',
@@ -35,6 +45,15 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
   }
 
   submitCar() {
+    // if (this.cars.make === '') {
+    //   this.violation.make = 'Make is Required';
+    //   console.log(this.violation);
+    // }
+    //
+    // if (Object.keys(this.violation).length > 0) {
+    //   alert('Please correct the errors before you submit the form.');
+    //   return;
+    // }
     axios.post('http://localhost:3000/cars', {
       make: this.cars.make,
       model: this.cars.model,
@@ -50,6 +69,24 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       .catch((err) => {
         this.violation = err.data || {};
       });
+  }
+
+  cancel() {
+    this.violation = {};
+    this.cars = { ...this.car };
+    this.$emit('cancelled', this.car);
+  }
+
+  get hasErr(): any {
+    return {
+      mk: this.violation.make ? false : null,
+      md: this.violation.model ? false : null,
+      yr: this.violation.year ? false : null,
+      km: this.violation.km ? false : null,
+      pr: this.violation.price ? false : null,
+      tr: this.violation.transmission ? false : null,
+      dt: this.violation.drivetrain ? false : null,
+    };
   }
 }
 
@@ -74,15 +111,13 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
 //   return !this.car || !this.cars.id;
 // }
 
-function submitCar() {
-  throw new Error('Function not implemented.');
-}
 </script>
 <template>
   <div class="m-auto border">
     <h1 class="text-center">Sell Your Car</h1>
     <b-form @submit.prevent="submitCar">
       <!--    Seller Name-->
+      <!--      TODO: Add validation for the seller fields-->
       <b-form-group
         class="m-4"
         label="Seller Name"
@@ -118,6 +153,8 @@ function submitCar() {
       </b-form-group>
       <!--Make-->
       <b-form-group
+        :invalid-feedback="violation.make"
+        :has-err="hasErr.mk"
         class="m-4"
         label="Make"
         label-cols-sm="2"
@@ -129,11 +166,18 @@ function submitCar() {
         <b-input-group>
           <b-form-input
             id="make-horizontal"
-            v-model="cars.make" />
+            v-model="cars.make"
+            :has-err="hasErr.mk"
+            @keydown="violation.make = null"
+            required
+          />
+
         </b-input-group>
       </b-form-group>
       <!--Model-->
       <b-form-group
+        :invalid-feedback="violation.model"
+        :has-err="hasErr.md"
         class="m-4"
         label="Model"
         label-cols-sm="2"
@@ -143,12 +187,20 @@ function submitCar() {
         label-for="model-horizontal"
       >
         <b-input-group>
-          <b-form-input id="model-horizontal" v-model="cars.model" />
+          <b-form-input
+            id="model-horizontal"
+            v-model="cars.model"
+            @keydown="violation.model = null"
+            :has-err="hasErr.md"
+            required
+          />
         </b-input-group>
       </b-form-group>
 
       <!--    Year-->
       <b-form-group
+        :invalid-feedback="violation.year"
+        :has-err="hasErr.yr"
         class="m-4"
         label="Year"
         label-cols-sm="2"
@@ -158,11 +210,19 @@ function submitCar() {
         label-for="year-horizontal"
       >
         <b-input-group>
-          <b-form-input id="year-horizontal" v-model="cars.year" />
+          <b-form-input
+            id="year-horizontal"
+            v-model="cars.year"
+            @keydown="violation.year = null"
+            :has-err="hasErr.yr"
+            required
+          />
         </b-input-group>
       </b-form-group>
       <!--    Kilometer-->
       <b-form-group
+        :invalid-feedback="violation.km"
+        :has-err="hasErr.km"
         class="m-4"
         label="Kilometers"
         label-cols-sm="2"
@@ -172,11 +232,21 @@ function submitCar() {
         label-for="km-horizontal"
       >
         <b-input-group>
-          <b-form-input id="km-horizontal" v-model="cars.km" />
+          <b-form-input
+            id="km-horizontal"
+            v-model="cars.km"
+            @keydown="violation.km = null"
+            :has-err="hasErr.km"
+            required
+
+          />
+
         </b-input-group>
       </b-form-group>
       <!--Price-->
       <b-form-group
+        :invalid-feedback="violation.price"
+        :has-err="hasErr.pr"
         class="m-4"
         label="Price"
         label-cols-sm="2"
@@ -186,11 +256,21 @@ function submitCar() {
         label-for="price-horizontal"
       >
         <b-input-group>
-          <b-form-input id="price-horizontal" v-model="cars.price" />
+          <b-form-input
+            id="price-horizontal"
+            v-model="cars.price"
+            @keydown="violation.price = null"
+            :has-err="hasErr.pr"
+            required
+
+          />
+
         </b-input-group>
       </b-form-group>
       <!--Transmission-->
       <b-form-group
+        :invalid-feedback="violation.transmission"
+        :has-err="hasErr.tr"
         class="m-4"
         label="Transmission"
         label-cols-sm="2"
@@ -200,11 +280,20 @@ function submitCar() {
         label-for="trans-horizontal"
       >
         <b-input-group>
-          <b-form-input id="trans-horizontal" v-model="cars.transmission" />
+          <b-form-input
+            id="trans-horizontal"
+            v-model="cars.transmission"
+            :invalid-feedback="violation.transmission"
+            :has-err="hasErr.tr"
+            required
+          />
+
         </b-input-group>
       </b-form-group>
       <!--Drivetrain-->
       <b-form-group
+        :invalid-feedback="violation.drivetrain"
+        :has-err="hasErr.dt"
         class="m-4"
         label="Drivetrain"
         label-cols-sm="2"
@@ -214,7 +303,13 @@ function submitCar() {
         label-for="drive-horizontal"
       >
         <b-input-group>
-          <b-form-input id="drive-horizontal" v-model="cars.drivetrain" />
+          <b-form-input
+            id="drive-horizontal"
+            v-model="cars.drivetrain"
+            :invalid-feedback="violation.drivetrain"
+            :has-err="hasErr.dt"
+            required />
+
         </b-input-group>
       </b-form-group>
       <b-row class="justify-content-center">
