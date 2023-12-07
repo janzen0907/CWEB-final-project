@@ -26,11 +26,12 @@ const routes: Array<RouteConfig> = [
   },
   /** *******   Add route item for Product View  ********* */
   {
-    path: '/product',
-    name: 'Product',
-    component: () => import('../views/ProductView.vue'),
+    path: '/myinfo',
+    name: 'myinfo',
+    component: () => import('../views/MyInfoView.vue'),
   },
 ];
+
 
 const router = new VueRouter({
   mode: 'history',
@@ -38,4 +39,13 @@ const router = new VueRouter({
 
 });
 
+// router.beforeEach((to, from, next) => {
+//   const { isAuthenticated } = router.app.$store.getters;
+//
+//   if (!isAuthenticated) {
+//     router.app.$bvModal.show('modal-1');
+//   } else {
+//     next();
+//   }
+// });
 export default router;

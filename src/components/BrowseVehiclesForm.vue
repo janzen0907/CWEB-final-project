@@ -6,6 +6,7 @@ import oauthSignIn from '@/assets/GoogleAuth';
 
 import Car from '@/models/Car';
 import Trader from '@/models/Trader';
+import store from '@/store';
 
 // eslint-disable-next-line import/no-absolute-path,@typescript-eslint/no-var-requires
 
@@ -39,7 +40,8 @@ export default class BrowseVehicles extends Vue {
   // }
 
   googleSignIn() {
-    oauthSignIn();
+    oauthSignIn(store);
+    console.log(store);
     // Vue.nextTick(() => {
     // const accessToken = this.getAccessTokenFromUrl();
     // this.getUserInfo(accessToken);
@@ -148,12 +150,17 @@ export default class BrowseVehicles extends Vue {
   mounted() {
     this.fetchCarData();
 
+    // if (!this.$store.getters.isAuthenticated) {
+    //   this.$bvModal.show('modal-1');
+    // }
+
     // Testing
     const accessToken = this.getAccessTokenFromUrl();
     if (accessToken !== 'null') {
       this.getUserInfo(accessToken);
     } else { /* empty */
     }
+
 
     // this.fetchTraderData();
   }

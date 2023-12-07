@@ -4,7 +4,9 @@
 // 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
 // 258639327-m885274s4g563cvhf639df70sqt30oo2.apps.googleusercontent.com
 
-export default function oauthSignIn() {
+
+
+export default function oauthSignIn(store: any) {
   // Google's OAuth 2.0 endpoint for requesting an access token
   const oauth2Endpoint = 'https://accounts.google.com/o/oauth2/v2/auth';
 
@@ -40,6 +42,19 @@ export default function oauthSignIn() {
   // Add form to page and submit it to open the OAuth 2.0 endpoint.
   document.body.appendChild(form);
   form.submit();
+
+  window.addEventListener('hashchange', () => {
+    const hash = window.location.hash.substring(1);
+    const urlParams = new URLSearchParams(hash);
+    const accessToken = urlParams.get('access_token');
+
+    if (accessToken) {
+      store.commit('setUser', {
+        email: urlParams.get('email'),
+        accessToken,
+      });
+    }
+  });
 }
 
 // export default oauthSignIn;
