@@ -99,6 +99,52 @@ export default class BrowseVehicles extends Vue {
     return accessToken;
   }
 
+  // Get to see number of likes
+  // Post to the database
+  async like() {
+    try {
+      const currentUpVotes = this.cars.numUpVotes;
+      console.log(currentUpVotes);
+      // await this.fetchCarData();
+      const idString = this.cars.id || '';
+      console.log(idString);
+      const result = await fetch(`http://localhost:3000/cars/${idString}`, {
+        method: 'PUT',
+        body: JSON.stringify(this.cars.numUpVotes + 1),
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      });
+      console.log(result);
+    } catch (err) {
+      console.log(err);
+    }
+    // eslint-disable-next-line no-shadow
+    // const tempCar = this.cars.find((tempCar: { id: number; }) => tempCar.id === carID);
+
+
+    // const currentUpVotes = this.cars.numUpVotes;
+    // const currentID = this.cars.id;
+    //   console.log(currentUpVotes);
+    //   const incrementedUpVotes = currentUpVotes + 1;
+    //   console.log(incrementedUpVotes);
+    //
+    //   await this.postLikes(incrementedUpVotes, currentID);
+    // } catch (error) {
+    //   console.error('Error fetching/updating upvotes:', error);
+    // }
+
+
+    // async postLikes(upVotes: number, id: number) {
+    //   try {
+    //     await axios.put(`http://localhost:3000/cars/${id}`, {
+    //       numUpVotes: upVotes,
+    //     });
+    //   } catch (err) {
+    //     console.error(err);
+    //   }
+    // }
+  }
+
+
   mounted() {
     this.fetchCarData();
 
@@ -112,6 +158,7 @@ export default class BrowseVehicles extends Vue {
     // this.fetchTraderData();
   }
 }
+
 
 </script>
 <!--<template v-for="carLoop in cars">-->
@@ -138,13 +185,9 @@ export default class BrowseVehicles extends Vue {
                 <b-button variant="success" size="lg" class="mb-3" v-b-modal:modal-1>Rate this
                   seller
                 </b-button>
-                <b-modal id="modal-1" title="Please Sign In to continue" @ok="googleSignIn">
-                  <p>Please sign in to your Google Account</p>
-                  <!--                  Google sign in method-->
-                  <template #modal-ok>Sign in</template>
-                </b-modal>
               </b-col>
             </b-row>
+
             <b-row>
               <b-col cols="6">
                 <!--                Add the seller name from the db here-->
@@ -161,14 +204,20 @@ export default class BrowseVehicles extends Vue {
             </b-row>
             <b-row>
               <b-col cols="6">
-                <b-button class="m-3">
+                <b-button class="m-3" @click="like" variant="info">
+
+
                   <b-icon icon="hand-thumbs-up" />
+                  <p>{{ carLoop.numUpVotes }}</p>
                   <!--                  Insert number of upvotes here-->
                 </b-button>
+
               </b-col>
               <b-col cols="6">
-                <b-button class="m-3">
+                <!--  TODO:    Write the dislike method-->
+                <b-button class="m-3" @click="dislike" variant="danger">
                   <b-icon icon="hand-thumbs-down" />
+                  <p>{{ carLoop.numDownVotes }}</p>
                 </b-button>
               </b-col>
             </b-row>
@@ -178,6 +227,11 @@ export default class BrowseVehicles extends Vue {
         </b-card>
       </b-col>
     </b-row>
+    <b-modal id="modal-1" title="Please Sign In to continue" @ok="googleSignIn">
+      <p>Please sign in to your Google Account</p>
+      <!--                  Google sign in method-->
+      <template #modal-ok>Sign in</template>
+    </b-modal>
     <!--    hand-thumbs-up-->
     <!--hand-thumbs-down-->
   </div>

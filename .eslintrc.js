@@ -23,6 +23,7 @@ module.exports = {
     'import/no-unresolved': 'off',
     'no-restricted-syntax': 'off',
     'class-methods-use-this': 'off',
+    'no-multiple-empty-lines': 'off',
     'vue/no-multi-spaces': 'error',
     'vue/attribute-hyphenation': 'error',
     'vue/this-in-template': 'error',

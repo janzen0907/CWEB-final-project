@@ -4,7 +4,8 @@ import {
 
 export default class Car {
    @IsOptional()
-     id!: number|undefined;
+     // id!:number|undefined;
+     id!: number;
 
   // NOTE: We could change this to a select box of available care makes if time permits
   @Length(1, 50, {
