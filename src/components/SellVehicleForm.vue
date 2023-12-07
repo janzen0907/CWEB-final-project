@@ -70,6 +70,8 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
     //   alert('Please correct the errors before you submit the form.');
     //   return;
     // }
+    // const { traderEmail } = this.cars;
+
     axios.post('http://localhost:3000/cars', {
       // id: this.cars.id,
       make: this.cars.make,
