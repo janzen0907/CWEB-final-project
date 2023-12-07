@@ -60,57 +60,84 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
     };
   }
 
+  // submitCar() {
+  //   // if (this.cars.make === '') {
+  //   //   this.violation.make = 'Make is Required';
+  //   //   console.log(this.violation);
+  //   // }
+  //   //
+  //   // if (Object.keys(this.violation).length > 0) {
+  //   //   alert('Please correct the errors before you submit the form.');
+  //   //   return;
+  //   // }
+  //   // const { traderEmail } = this.cars;
+  //
+  //   axios.post('http://localhost:3000/cars', {
+  //     // id: this.cars.id,
+  //     make: this.cars.make,
+  //     model: this.cars.model,
+  //     year: this.cars.year,
+  //     km: this.cars.km,
+  //     price: this.cars.price,
+  //     transmission: this.cars.transmission,
+  //     drivetrain: this.cars.drivetrain,
+  //     numUpVotes: this.cars.numUpVotes,
+  //     numDownVotes: this.cars.numDownVotes,
+  //     traderEmail: this.cars.traderEmail,
+  //     traderName: this.cars.traderName,
+  //
+  //   })
+  //     .then((response) => {
+  //       console.log(response);
+  //     })
+  //     .catch((err) => {
+  //       this.violation = err.data || {};
+  //     });
+  // }
+
+  // submitTrader() {
+  //   axios.post('http://localhost:3000/traders', {
+  //     // id: this.cars.id,
+  //     name: this.traders.name,
+  //     email: this.traders.email,
+  //     rating: this.traders.rating,
+  //     ratingCount: this.traders.ratingCount,
+  //
+  //   })
+  //     .then((response) => {
+  //       console.log(response);
+  //     })
+  //     .catch((err) => {
+  //       this.violation = err.data || {};
+  //     });
+  // }
+
   submitCar() {
-    // if (this.cars.make === '') {
-    //   this.violation.make = 'Make is Required';
-    //   console.log(this.violation);
-    // }
-    //
-    // if (Object.keys(this.violation).length > 0) {
-    //   alert('Please correct the errors before you submit the form.');
-    //   return;
-    // }
-    // const { traderEmail } = this.cars;
-
-    axios.post('http://localhost:3000/cars', {
-      // id: this.cars.id,
-      make: this.cars.make,
-      model: this.cars.model,
-      year: this.cars.year,
-      km: this.cars.km,
-      price: this.cars.price,
-      transmission: this.cars.transmission,
-      drivetrain: this.cars.drivetrain,
-      numUpVotes: this.cars.numUpVotes,
-      numDownVotes: this.cars.numDownVotes,
-      traderEmail: this.cars.traderEmail,
-      traderName: this.cars.traderName,
-
-    })
-      .then((response) => {
-        console.log(response);
+    // Assuming you already have a valid trader email in this.traders.email
+    if (this.traders.email) {
+      axios.post('http://localhost:3000/cars', {
+        make: this.cars.make,
+        model: this.cars.model,
+        year: this.cars.year,
+        km: this.cars.km,
+        price: this.cars.price,
+        transmission: this.cars.transmission,
+        drivetrain: this.cars.drivetrain,
+        traderEmail: this.traders.email, // Associate the car with the trader by email
+        traderName: this.traders.name, // Optionally, you can store the trader name too
       })
-      .catch((err) => {
-        this.violation = err.data || {};
-      });
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((err) => {
+          this.violation = err.data || {};
+        });
+    } else {
+      // Handle the case where trader email is not provided
+      alert('Please enter your email before submitting the car details.');
+    }
   }
 
-  submitTrader() {
-    axios.post('http://localhost:3000/traders', {
-      // id: this.cars.id,
-      name: this.traders.name,
-      email: this.traders.email,
-      rating: this.traders.rating,
-      ratingCount: this.traders.ratingCount,
-
-    })
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((err) => {
-        this.violation = err.data || {};
-      });
-  }
 
   cancel() {
     this.violation = {};
@@ -150,7 +177,6 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-            @submit.prevent="submitTrader"
             id="name-horizontal"
             v-model="traders.name"
           />
@@ -168,7 +194,6 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-            @submit.prevent="submitTrader"
             id="email-horizontal"
             v-model="traders.email"
           />
@@ -188,7 +213,7 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-            @submit.prevent="submitCar"
+
             id="make-horizontal"
             v-model="cars.make"
             :has-err="hasErr.mk"
@@ -212,7 +237,7 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-            @submit.prevent="submitCar"
+
             id="model-horizontal"
             v-model="cars.model"
             @keydown="violation.model = null"
@@ -236,7 +261,7 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-            @submit.prevent="submitCar"
+
             id="year-horizontal"
             v-model="cars.year"
             @keydown="violation.year = null"
@@ -259,7 +284,7 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-            @submit.prevent="submitCar"
+
             id="km-horizontal"
             v-model="cars.km"
             @keydown="violation.km = null"
@@ -284,7 +309,7 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-            @submit.prevent="submitCar"
+
             id="price-horizontal"
             v-model="cars.price"
             @keydown="violation.price = null"
@@ -309,7 +334,7 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-            @submit.prevent="submitCar"
+
             id="trans-horizontal"
             v-model="cars.transmission"
             :invalid-feedback="violation.transmission"
@@ -333,7 +358,7 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-            @submit.prevent="submitCar"
+
             id="drive-horizontal"
             v-model="cars.drivetrain"
             :invalid-feedback="violation.drivetrain"
