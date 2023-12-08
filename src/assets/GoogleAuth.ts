@@ -1,7 +1,7 @@
 /*
  * Create form to request access token from Google's OAuth 2.0 server.
  */
-// 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
+// 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 - secret
 // 258639327-m885274s4g563cvhf639df70sqt30oo2.apps.googleusercontent.com
 
 
@@ -20,10 +20,6 @@ export default function oauthSignIn(store: any) {
     client_id: '258639327-m885274s4g563cvhf639df70sqt30oo2.apps.googleusercontent.com',
     redirect_uri: 'http://localhost:8080/browse',
     response_type: 'token',
-    // Get the email and the name from google of the user signing in.
-    // scope: 'https://www.googleapis.com/auth/drive.metadata.readonly '
-    //   + 'https://www.googleapis.com/auth/userinfo.email '
-    //   + 'https://www.googleapis.com/auth/userinfo.profile',
     scope: ['email'],
     include_granted_scopes: 'true',
     state: 'pass-through value',
@@ -56,5 +52,3 @@ export default function oauthSignIn(store: any) {
     }
   });
 }
-
-// export default oauthSignIn;

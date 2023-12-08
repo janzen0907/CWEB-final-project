@@ -8,7 +8,7 @@ export default class Trader {
     email!: string;
 
   @Length(1, 300, {
-    message: 'Name must be between $constrain1 and $constraint2 charecters',
+    message: 'Name must be between $constrain1 and $constraint2 characters',
   })
     name!: string;
 

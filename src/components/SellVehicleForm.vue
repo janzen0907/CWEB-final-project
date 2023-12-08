@@ -1,27 +1,13 @@
 <script lang="ts">
-import {
-  Vue, Component, Prop, Mixins,
-} from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
-import { readonly } from 'vue';
+import {Vue, Component, Prop, Mixins} from 'vue-property-decorator';
 import axios from 'axios';
 import Car from '@/models/Car';
 import Trader from '@/models/Trader';
-import GlobalMixin from '@/mixins/global-mixin';
-// ADd the JS script for auth.
+import Violation from "@/models/Violation";
+import {validate, ValidationError} from "class-validator";
+import GlobalMixin from "@/mixins/global-mixin";
 
-@Component({
-  computed: {
-    ...mapGetters(['isAuthenticated']),
-  },
-  watch: {
-    isAuthenticated(value) {
-      if (!value) {
-        this.$router.push('/signin');
-      }
-    },
-  },
-})
+@Component({})
 export default class SellVehicleForm extends Mixins(GlobalMixin) {
   @Prop({ type: Car, validator: (c) => c instanceof Car })
   readonly car!: Car;
@@ -33,8 +19,9 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
 
   traders: Trader = new Trader();
 
-  violation: any = {};
+  violation: Violation = new Violation();
 
+  // Display text
   dt = {
     mk: 'Make',
     md: 'Model',
@@ -61,74 +48,28 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       numDownVotes: '',
       traderEmail: '',
       traderName: '',
-
     };
   }
 
-  dataTrader() {
-    return {
-      name: '',
-      email: '',
-      rating: '',
-      ratingCount: '',
-    };
-  }
+  /**
+   * This method checks to see if all inputs have valid information
+   * If validation passes, post to the database
+   * If invalid, show errors and don't post
+   */
+  async submitCar() {
+    this.violation = new Violation();
 
-  // submitCar() {
-  //   // if (this.cars.make === '') {
-  //   //   this.violation.make = 'Make is Required';
-  //   //   console.log(this.violation);
-  //   // }
-  //   //
-  //   // if (Object.keys(this.violation).length > 0) {
-  //   //   alert('Please correct the errors before you submit the form.');
-  //   //   return;
-  //   // }
-  //   // const { traderEmail } = this.cars;
-  //
-  //   axios.post('http://localhost:3000/cars', {
-  //     // id: this.cars.id,
-  //     make: this.cars.make,
-  //     model: this.cars.model,
-  //     year: this.cars.year,
-  //     km: this.cars.km,
-  //     price: this.cars.price,
-  //     transmission: this.cars.transmission,
-  //     drivetrain: this.cars.drivetrain,
-  //     numUpVotes: this.cars.numUpVotes,
-  //     numDownVotes: this.cars.numDownVotes,
-  //     traderEmail: this.cars.traderEmail,
-  //     traderName: this.cars.traderName,
-  //
-  //   })
-  //     .then((response) => {
-  //       console.log(response);
-  //     })
-  //     .catch((err) => {
-  //       this.violation = err.data || {};
-  //     });
-  // }
-
-  // submitTrader() {
-  //   axios.post('http://localhost:3000/traders', {
-  //     // id: this.cars.id,
-  //     name: this.traders.name,
-  //     email: this.traders.email,
-  //     rating: this.traders.rating,
-  //     ratingCount: this.traders.ratingCount,
-  //
-  //   })
-  //     .then((response) => {
-  //       console.log(response);
-  //     })
-  //     .catch((err) => {
-  //       this.violation = err.data || {};
-  //     });
-  // }
-
-  submitCar() {
-    // Assuming you already have a valid trader email in this.traders.email
-    if (this.traders.email) {
+    const errors = await validate(this.cars);
+    if (errors.length > 0) {
+      const tempVio = new Violation();
+      errors.forEach((vio: ValidationError) => {
+        Object.assign(tempVio, {
+          [vio.property]: vio.constraints![Object.keys(vio.constraints!)[0]],
+        });
+      });
+      console.log(tempVio);
+      this.violation = tempVio;
+    } else if (this.traders.email) { // Check that the trader email is valid
       axios.post('http://localhost:3000/cars', {
         make: this.cars.make,
         model: this.cars.model,
@@ -138,13 +79,13 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
         transmission: this.cars.transmission,
         drivetrain: this.cars.drivetrain,
         traderEmail: this.traders.email, // Associate the car with the trader by email
-        traderName: this.traders.name, // Optionally, you can store the trader name too
+        traderName: this.traders.name,
       })
         .then((response) => {
           console.log(response);
         })
         .catch((err) => {
-          this.violation = err.data || {};
+          this.violation = err.data || new Violation();
         });
     } else {
       // Handle the case where trader email is not provided
@@ -152,26 +93,10 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
     }
   }
 
-
   cancel() {
-    this.violation = {};
+    this.violation = new Violation();
     this.cars = { ...this.car };
     this.$emit('cancelled', this.car);
-  }
-
-  get hasErr(): any {
-    return {
-      // id: this.violation.id ? false : null,
-      mk: this.violation.make ? false : null,
-      md: this.violation.model ? false : null,
-      yr: this.violation.year ? false : null,
-      km: this.violation.km ? false : null,
-      pr: this.violation.price ? false : null,
-      tr: this.violation.transmission ? false : null,
-      dt: this.violation.drivetrain ? false : null,
-      sn: this.violation.name ? false : null,
-      te: this.violation.email ? false : null,
-    };
   }
 }
 
@@ -182,8 +107,10 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
     <h1 class="text-center">Sell Your Car</h1>
     <b-form>
       <!--    Seller Name-->
-      <!--      TODO: Add validation for the seller fields-->
+      <!--      DONE: Add validation for the seller fields-->
       <b-form-group
+        :invalid-feedback="violation.name"
+        :state="violation.name ? false : null"
         class="m-4"
         :label="dt.sn"
         label-cols-sm="2"
@@ -194,15 +121,17 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-            :has-err="hasErr.sn"
+            :state="violation.name ? false : null"
             id="name-horizontal"
             v-model="traders.name"
-            @keydown="violation.traderName = null"
+            required
           />
         </b-input-group>
       </b-form-group>
       <!--Email-->
       <b-form-group
+        :invalid-feedback="violation.email"
+        :state="violation.email ? false : null"
         class="m-4"
         label="Email"
         label-cols-sm="2"
@@ -213,15 +142,17 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
+            :state="violation.email ? false : null"
             id="email-horizontal"
             v-model="traders.email"
+            required
           />
         </b-input-group>
       </b-form-group>
       <!--Make-->
       <b-form-group
         :invalid-feedback="violation.make"
-        :has-err="hasErr.mk"
+        :state="violation.make ? false : null"
         class="m-4"
         :label="dt.mk"
         label-cols-sm="2"
@@ -232,10 +163,9 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
+            :state="violation.make ? false : null"
             id="make-horizontal"
             v-model="cars.make"
-            :has-err="hasErr.mk"
-            @keydown="violation.make = null"
             required
           />
 
@@ -244,7 +174,7 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       <!--Model-->
       <b-form-group
         :invalid-feedback="violation.model"
-        :has-err="hasErr.md"
+        :state="violation.model ? false : null"
         class="m-4"
         label="Model"
         label-cols-sm="2"
@@ -255,11 +185,9 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-
+            :state="violation.model ? false : null"
             id="model-horizontal"
             v-model="cars.model"
-            @keydown="violation.model = null"
-            :has-err="hasErr.md"
             required
           />
         </b-input-group>
@@ -268,7 +196,7 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       <!--    Year-->
       <b-form-group
         :invalid-feedback="violation.year"
-        :has-err="hasErr.yr"
+        :state="violation.year ? false : null"
         class="m-4"
         label="Year"
         label-cols-sm="2"
@@ -279,11 +207,9 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-
+            :state="violation.year ? false : null"
             id="year-horizontal"
             v-model="cars.year"
-            @keydown="violation.year = null"
-            :has-err="hasErr.yr"
             required
           />
         </b-input-group>
@@ -291,7 +217,7 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       <!--    Kilometer-->
       <b-form-group
         :invalid-feedback="violation.km"
-        :has-err="hasErr.km"
+        :state="violation.km ? false : null"
         class="m-4"
         label="Kilometers"
         label-cols-sm="2"
@@ -302,11 +228,9 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-
+            :state="violation.km ? false : null"
             id="km-horizontal"
             v-model="cars.km"
-            @keydown="violation.km = null"
-            :has-err="hasErr.km"
             required
 
           />
@@ -316,7 +240,7 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       <!--Price-->
       <b-form-group
         :invalid-feedback="violation.price"
-        :has-err="hasErr.pr"
+        :state="violation.price ? false : null"
         class="m-4"
         label="Price"
         label-cols-sm="2"
@@ -327,13 +251,10 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-
+            :state="violation.price ? false : null"
             id="price-horizontal"
             v-model="cars.price"
-            @keydown="violation.price = null"
-            :has-err="hasErr.pr"
             required
-
           />
 
         </b-input-group>
@@ -341,7 +262,7 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       <!--Transmission-->
       <b-form-group
         :invalid-feedback="violation.transmission"
-        :has-err="hasErr.tr"
+        :state="violation.transmission ? false : null"
         class="m-4"
         label="Transmission"
         label-cols-sm="2"
@@ -352,11 +273,9 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-
+            :state="violation.transmission ? false : null"
             id="trans-horizontal"
             v-model="cars.transmission"
-            :invalid-feedback="violation.transmission"
-            :has-err="hasErr.tr"
             required
           />
 
@@ -365,7 +284,7 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       <!--Drivetrain-->
       <b-form-group
         :invalid-feedback="violation.drivetrain"
-        :has-err="hasErr.dt"
+        :state="violation.drivetrain ? false : null"
         class="m-4"
         label="Drivetrain"
         label-cols-sm="2"
@@ -376,11 +295,9 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-
+            :state="violation.drivetrain ? false : null"
             id="drive-horizontal"
             v-model="cars.drivetrain"
-            :invalid-feedback="violation.drivetrain"
-            :has-err="hasErr.dt"
             required />
 
         </b-input-group>

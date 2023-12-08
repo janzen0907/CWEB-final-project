@@ -1,27 +1,16 @@
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
-
+import {Vue, Component, Prop, Mixins} from 'vue-property-decorator';
 import axios from 'axios';
-import { mapGetters } from 'vuex';
 import oauthSignIn from '@/assets/GoogleAuth';
-
 import Car from '@/models/Car';
 import Trader from '@/models/Trader';
 import store from '@/store';
-import MyInfoForm from '@/components/MyInfoForm.vue';
-// import { EventBus } from '@/store/EventBus';
+import GlobalMixin from "@/mixins/global-mixin";
 
 // eslint-disable-next-line import/no-absolute-path,@typescript-eslint/no-var-requires
 
-@Component({
-  components: { MyInfoForm },
-  computed: {
-    // set the isAuthenticated
-    ...mapGetters(['isAuthenticated']),
-  },
-
-})
-export default class BrowseVehicles extends Vue {
+@Component({})
+export default class BrowseVehicles extends Mixins(GlobalMixin) {
   //   Add the props in as needed everything to fill this will be an API call to the DB
   @Prop({ type: Car, validator: (c) => c instanceof Car })
   readonly car!: Car;
@@ -35,6 +24,9 @@ export default class BrowseVehicles extends Vue {
 
   loading = true;
 
+  /**
+   * Getting the cars from the database
+   */
   async fetchCarData() {
     const response = await fetch('http://localhost:3000/cars');
     const data = await response.json();
@@ -42,22 +34,23 @@ export default class BrowseVehicles extends Vue {
     this.loading = false;
   }
 
-  // async fetchTraderData() {
-  //   const response = await fetch('http://localhost:3000/traders');
-  //   const data = await response.json();
-  //   this.traders = data;
-  //   this.loading = false;
-  // }
-  // Testing
+  /**
+   * Parsing the access token from the url
+   */
   getAccessTokenFromUrl() {
     // Get the access token for the user from google
     const hash = window.location.hash.substring(1);
     const urlParams = new URLSearchParams(hash);
     const accessToken = urlParams.get('access_token');
+    store.getters.setAccessToken(store.state, accessToken);
     console.log(`Access Token: ${accessToken}`);
     return accessToken;
   }
 
+  /**
+   * Takes in the access token which allows us to get the user's name and email from their google account
+   * @param accessToken   Access token from the url
+   */
   getUserInfo(accessToken: any) {
     fetch('https://www.googleapis.com/oauth2/v1/userinfo?alt=json', {
       headers: {
@@ -78,23 +71,28 @@ export default class BrowseVehicles extends Vue {
       });
   }
 
+  /**
+   * Calls Google Oauth from assets and saves access token to local storage
+   */
   googleSignIn() {
     oauthSignIn(store);
     console.log(store.getters.isAuthenticated);
     const accessToken = this.getAccessTokenFromUrl();
     if (accessToken !== 'null') {
       localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('accessToken', accessToken + '');
       this.getUserInfo(accessToken);
     }
-    // Vue.nextTick(() => {
-    // const accessToken = this.getAccessTokenFromUrl();
-    // this.getUserInfo(accessToken);
-    // });
+
   }
 
-  // Testing
-
-
+  /**
+   * This method checks if they are in the Trader DB
+   * If they are, post the email and name of the Trader
+   * If they aren't, catch the error
+   * @param newEmail  Email of the trader
+   * @param newName   Full name of the trader
+   */
   async handleTrader(newEmail: string, newName: string) {
     // Check to see if the user already exists
     const response = await axios.get('http://localhost:3000/traders', {
@@ -108,7 +106,7 @@ export default class BrowseVehicles extends Vue {
         name: newName,
       })
         // We should probably change this eventually but for now just ignore the 500
-        // its because a user with that email is already in the DB
+        // It is because a user with that email is already in the DB
         .catch((err) => {
           if (err.response && err.response.status === 500) {
             console.log('Ignore the error');
@@ -122,6 +120,9 @@ export default class BrowseVehicles extends Vue {
 
   // Get to see number of likes
   // Post to the database
+  /**
+   * Send a put request to the database to increment the amount of up votes a vehicle has
+   */
   async like() {
     try {
       const response = await axios.put(`http://localhost:3000/cars/${this.cars.id}`);
@@ -159,7 +160,6 @@ export default class BrowseVehicles extends Vue {
     //   console.error('Error fetching/updating upvotes:', error);
     // }
 
-
     // async postLikes(upVotes: number, id: number) {
     //   try {
     //     await axios.put(`http://localhost:3000/cars/${id}`, {
@@ -171,28 +171,20 @@ export default class BrowseVehicles extends Vue {
     // }
   }
 
-
+  /**
+   * Called when the page is loaded to immediately load the cars from the database
+   */
   mounted() {
     this.fetchCarData();
-
-    // if (!this.$store.getters.isAuthenticated) {
-    //   this.$bvModal.show('modal-1');
-    // }
-    // Testing
     const accessToken = this.getAccessTokenFromUrl();
     if (accessToken !== 'null') {
       this.getUserInfo(accessToken);
-    } else { /* empty */
-    }
-
-
-    // this.fetchTraderData();
+    } else { /* empty */}
   }
 }
 
 
 </script>
-<!--<template v-for="carLoop in cars">-->
 <template>
   <div>
     <h1 class="text-center">Browse Vehicles</h1>
@@ -210,7 +202,6 @@ export default class BrowseVehicles extends Vue {
             <p>Price: {{ carLoop.price }}</p>
             <p>Transmission: {{ carLoop.transmission }}</p>
             <p>Drivetrain: {{ carLoop.drivetrain }}</p>
-            <!--            Can use float right to move it but then its on the same line as seller stuff-->
             <b-row>
               <b-col>
                 <b-button variant="success" size="lg" class="mb-3" v-b-modal:modal-1>Rate this
@@ -221,31 +212,23 @@ export default class BrowseVehicles extends Vue {
 
             <b-row>
               <b-col cols="6">
-                <!--                Add the seller name from the db here-->
-                <!--                Need to add logic here probably a V-IF. Show edit listing if the -->
-                <!--                car belongs to that person otherwise it can show the edit and rating buttons-->
                 <p>Seller Name: {{ carLoop.traderName }}</p>
-
               </b-col>
               <b-col cols="6">
                 <label for="rating-inline">Seller Rating:</label>
-                <!--                TODO: Get rating from DB per seller-->
+                <!--                TODO: Get rating from DB per seller - not implemented-->
                 <b-form-rating id="rating-inline" inline value="4" :readonly="true" />
               </b-col>
             </b-row>
             <b-row>
               <b-col cols="6">
                 <b-button class="m-3" @click="like" variant="info">
-
-
                   <b-icon icon="hand-thumbs-up" />
                   <p>{{ carLoop.numUpVotes }}</p>
-                  <!--                  Insert number of upvotes here-->
                 </b-button>
-
               </b-col>
               <b-col cols="6">
-                <!--  TODO:    Write the dislike method-->
+                <!--  TODO:    Write the dislike method - not implemented-->
                 <b-button class="m-3" @click="dislike" variant="danger">
                   <b-icon icon="hand-thumbs-down" />
                   <p>{{ carLoop.numDownVotes }}</p>
@@ -253,8 +236,8 @@ export default class BrowseVehicles extends Vue {
               </b-col>
             </b-row>
           </b-card-text>
-          <!--    TODO: Add seller information, buttons and upvotes and downvotes-->
-          <!--          Going to need another loop for seller information -->
+          <!--    DONE: Add seller information, buttons and upvotes and downvotes-->
+          <!--          DONE: Going to need another loop for seller information -->
         </b-card>
       </b-col>
     </b-row>
@@ -263,8 +246,6 @@ export default class BrowseVehicles extends Vue {
       <!--                  Google sign in method-->
       <template #modal-ok>Sign in</template>
     </b-modal>
-    <!--    hand-thumbs-up-->
-    <!--hand-thumbs-down-->
   </div>
 </template>
 <style scoped/>

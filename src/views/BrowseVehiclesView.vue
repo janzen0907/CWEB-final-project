@@ -1,6 +1,5 @@
 <script lang="ts">
 import { Vue, Component, Mixins } from 'vue-property-decorator';
-import { BvTableCtxObject } from 'bootstrap-vue/src/components/table';
 import { BCard } from 'bootstrap-vue';
 import BrowseVehiclesForm from '@/components/BrowseVehiclesForm.vue';
 import GlobalMixin from '@/mixins/global-mixin';
@@ -12,18 +11,6 @@ export default class BrowseVehicles extends Mixins(GlobalMixin) {
   $refs!: {
     carCard: BCard;
   };
-
-  // any logic for the card would go here
-  // TODO: Finish working on this API call currently is not workig
-  provider(ctx: BvTableCtxObject): Promise<any> {
-    return this.callAPI(`${ctx.apiUrl}`);
-  }
-
-  get cars() {
-    return this.$refs.carCard.localItems;
-  }
-
-
 
   fields = [
     { key: 'id', sortable: true },
@@ -43,9 +30,8 @@ export default class BrowseVehicles extends Mixins(GlobalMixin) {
 <template>
   <div>
     <b-card>
-      <!--      TODO: Add Car form here once completed-->
+      <!--      DONE: Add Car form here once completed-->
       <browse-vehicles-form>
-        <!--        Emit needed events for the buttons-->
         <b-card
           ref="carCard"
           :fields="fields"

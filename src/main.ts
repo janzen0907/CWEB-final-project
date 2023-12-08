@@ -9,9 +9,8 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 Vue.config.productionTip = false;
 
-// Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue);
-// optionally install the BootstrapVue icon components plugin
+
 Vue.use(IconsPlugin);
 
 // make all the global-mixin methods and data available in ALL components

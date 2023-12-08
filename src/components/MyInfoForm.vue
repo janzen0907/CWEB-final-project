@@ -1,12 +1,12 @@
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+import {Vue, Component, Prop, Mixins} from 'vue-property-decorator';
 import axios from 'axios';
 import Car from '@/models/Car';
 import Trader from '@/models/Trader';
-// import { EventBus } from '@/store/EventBus';
+import GlobalMixin from "@/mixins/global-mixin";
 
 @Component({})
-export default class MyInfoForm extends Vue {
+export default class MyInfoForm extends Mixins(GlobalMixin) {
   @Prop({ type: Car, validator: (c) => c instanceof Car })
   readonly car!: Car;
 
@@ -17,24 +17,23 @@ export default class MyInfoForm extends Vue {
 
   traders: Trader = new Trader();
 
+  /**
+   * A method to delete user from DB based on email
+   * Please reload the backend when deleting
+   */
   async handleDelete() {
     try {
       const response = await axios.delete(`http://localhost:3000/traders/${this.traders.email}`);
       // When deleting a user it breaks the browse page until the backend is restarted
-      // i tried using VueX but im struggling with it and i tried an event bus that didnt seem to work.
-      // EventBus.$emit('account-deleted', this.traders.email);
+      // I tried using VueX but im struggling with it and I tried an event bus that didn't seem to work.
     } catch (error) {
       console.error(error);
     }
   }
 }
 
-
-
-// A method to delete user from DB based on email
 </script>
 <template>
-
   <div class="m-auto border">
     <h1 class="text-center">My Info</h1>
     <p class="mb-1 text-center">Delete your account by entering your email</p>
@@ -47,7 +46,6 @@ export default class MyInfoForm extends Vue {
         content-cols-sm
         content-cols-lg="5"
         label-for="email-horizontal">
-
         <b-input-group>
           <b-form-input
             id="email-horizontal"
@@ -56,11 +54,9 @@ export default class MyInfoForm extends Vue {
           />
         </b-input-group>
       </b-form-group>
-      <!--      TODO: make this centered-->
       <b-row class="justify-content-center">
         <b-button class="m-2" variant="danger" v-b-modal:modal-delete>DELETE YOUR ACCOUNT</b-button>
       </b-row>
-
     </b-form>
     <b-modal
       id="modal-delete"
@@ -72,7 +68,6 @@ export default class MyInfoForm extends Vue {
     </b-modal>
   </div>
 </template>
-
 
 <style scoped>
 

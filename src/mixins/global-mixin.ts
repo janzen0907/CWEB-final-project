@@ -10,7 +10,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 const BASE_API = 'http://localhost:3000';
-const STUDENT_API = `${BASE_API}/students`;
+const TRADER_API = `${BASE_API}/traders`;
 const CAR_API = `${BASE_API}/cars`;
 
 const FETCH_HEADERS:any = {
@@ -27,7 +27,7 @@ export default class GlobalMixin extends Vue {
   // immutable constant data variables
   BASE_API = BASE_API;
 
-  STUDENT_API = STUDENT_API;
+  TRADER_API = TRADER_API;
 
   CAR_API = CAR_API;
 

@@ -15,11 +15,13 @@ export default new Vuex.Store({
     // values for user and isAuthenticated
     user: null,
     isAuthenticated: false,
+    accessToken: null
   },
   getters: {
     // getter for the state
     user: (state) => state.user,
     isAuthenticated: (state) => state.isAuthenticated,
+    accessToken: (state) => state.accessToken
   },
   mutations: {
     // set the state
@@ -30,6 +32,9 @@ export default new Vuex.Store({
     setUser(state, user) {
       state.user = user;
     },
+    setAccessToken(state, accessToken) {
+      state.accessToken = accessToken;
+    }
   },
   actions: {
     signIn({ commit }, user) {
