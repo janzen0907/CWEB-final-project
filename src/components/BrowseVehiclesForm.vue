@@ -66,6 +66,7 @@ export default class BrowseVehicles extends Vue {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log('Google response: ', data);
         console.log(`User's Email:${data.email}`);
         console.log(`User's Name: ${data.name}`);
         console.log(accessToken);

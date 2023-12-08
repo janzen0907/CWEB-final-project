@@ -36,13 +36,15 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
   violation: any = {};
 
   dt = {
-    mk: 'make',
-    md: 'model',
-    yr: 'year',
-    km: 'km',
-    pr: 'price',
-    tr: 'transmission',
-    dt: 'drivetrain',
+    mk: 'Make',
+    md: 'Model',
+    yr: 'Year',
+    km: 'Km',
+    pr: 'Price',
+    tr: 'Transmission',
+    dt: 'Drivetrain',
+    sn: 'Seller Name',
+    te: 'Email',
   };
 
   data() {
@@ -167,6 +169,8 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       pr: this.violation.price ? false : null,
       tr: this.violation.transmission ? false : null,
       dt: this.violation.drivetrain ? false : null,
+      sn: this.violation.name ? false : null,
+      te: this.violation.email ? false : null,
     };
   }
 }
@@ -181,7 +185,7 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       <!--      TODO: Add validation for the seller fields-->
       <b-form-group
         class="m-4"
-        label="Seller Name"
+        :label="dt.sn"
         label-cols-sm="2"
         label-cols-lg="3"
         content-cols-sm
@@ -190,8 +194,10 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
+            :has-err="hasErr.sn"
             id="name-horizontal"
             v-model="traders.name"
+            @keydown="violation.traderName = null"
           />
         </b-input-group>
       </b-form-group>
@@ -217,7 +223,7 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
         :invalid-feedback="violation.make"
         :has-err="hasErr.mk"
         class="m-4"
-        label="Make"
+        :label="dt.mk"
         label-cols-sm="2"
         label-cols-lg="3"
         content-cols-sm
@@ -226,7 +232,6 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
       >
         <b-input-group>
           <b-form-input
-
             id="make-horizontal"
             v-model="cars.make"
             :has-err="hasErr.mk"
