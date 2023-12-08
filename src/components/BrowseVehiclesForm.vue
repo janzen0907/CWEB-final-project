@@ -2,15 +2,25 @@
 import { Vue, Component, Prop } from 'vue-property-decorator';
 
 import axios from 'axios';
+import { mapGetters } from 'vuex';
 import oauthSignIn from '@/assets/GoogleAuth';
 
 import Car from '@/models/Car';
 import Trader from '@/models/Trader';
 import store from '@/store';
+import MyInfoForm from '@/components/MyInfoForm.vue';
+// import { EventBus } from '@/store/EventBus';
 
 // eslint-disable-next-line import/no-absolute-path,@typescript-eslint/no-var-requires
 
-@Component({})
+@Component({
+  components: { MyInfoForm },
+  computed: {
+    // set the isAuthenticated
+    ...mapGetters(['isAuthenticated']),
+  },
+
+})
 export default class BrowseVehicles extends Vue {
   //   Add the props in as needed everything to fill this will be an API call to the DB
   @Prop({ type: Car, validator: (c) => c instanceof Car })
@@ -38,17 +48,16 @@ export default class BrowseVehicles extends Vue {
   //   this.traders = data;
   //   this.loading = false;
   // }
-
-  googleSignIn() {
-    oauthSignIn(store);
-    console.log(store);
-    // Vue.nextTick(() => {
-    // const accessToken = this.getAccessTokenFromUrl();
-    // this.getUserInfo(accessToken);
-    // });
+  // Testing
+  getAccessTokenFromUrl() {
+    // Get the access token for the user from google
+    const hash = window.location.hash.substring(1);
+    const urlParams = new URLSearchParams(hash);
+    const accessToken = urlParams.get('access_token');
+    console.log(`Access Token: ${accessToken}`);
+    return accessToken;
   }
 
-  // Testing
   getUserInfo(accessToken: any) {
     fetch('https://www.googleapis.com/oauth2/v1/userinfo?alt=json', {
       headers: {
@@ -64,8 +73,26 @@ export default class BrowseVehicles extends Vue {
         // Handle the trader
         this.handleTrader(data.email, data.name);
         console.log(data.name, data.email);
+        this.$store.commit('setUser', data);
       });
   }
+
+  googleSignIn() {
+    oauthSignIn(store);
+    console.log(store.getters.isAuthenticated);
+    const accessToken = this.getAccessTokenFromUrl();
+    if (accessToken !== 'null') {
+      localStorage.setItem('isAuthenticated', 'true');
+      this.getUserInfo(accessToken);
+    }
+    // Vue.nextTick(() => {
+    // const accessToken = this.getAccessTokenFromUrl();
+    // this.getUserInfo(accessToken);
+    // });
+  }
+
+  // Testing
+
 
   async handleTrader(newEmail: string, newName: string) {
     // Check to see if the user already exists
@@ -91,34 +118,31 @@ export default class BrowseVehicles extends Vue {
     }
   }
 
-  // Testing
-  getAccessTokenFromUrl() {
-    // Get the access token for the user from google
-    const hash = window.location.hash.substring(1);
-    const urlParams = new URLSearchParams(hash);
-    const accessToken = urlParams.get('access_token');
-    console.log(`Access Token: ${accessToken}`);
-    return accessToken;
-  }
 
   // Get to see number of likes
   // Post to the database
   async like() {
     try {
-      const currentUpVotes = this.cars.numUpVotes;
-      console.log(currentUpVotes);
-      // await this.fetchCarData();
-      const idString = this.cars.id || '';
-      console.log(idString);
-      const result = await fetch(`http://localhost:3000/cars/${idString}`, {
-        method: 'PUT',
-        body: JSON.stringify(this.cars.numUpVotes + 1),
-        headers: { 'Content-Type': 'application/json; charset=utf-8' },
-      });
-      console.log(result);
+      const response = await axios.put(`http://localhost:3000/cars/${this.cars.id}`);
     } catch (err) {
       console.log(err);
     }
+    // async like() {
+    //   try {
+    //     const currentUpVotes = this.cars.numUpVotes;
+    //     console.log(currentUpVotes);
+    //     // await this.fetchCarData();
+    //     const idString = this.cars.id || '';
+    //     console.log(idString);
+    //     const result = await fetch(`http://localhost:3000/cars/${idString}`, {
+    //       method: 'PUT',
+    //       body: JSON.stringify(this.cars.numUpVotes + 1),
+    //       headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    //     });
+    //     console.log(result);
+    //   } catch (err) {
+    //     console.log(err);
+    //   }
     // eslint-disable-next-line no-shadow
     // const tempCar = this.cars.find((tempCar: { id: number; }) => tempCar.id === carID);
 
@@ -153,7 +177,6 @@ export default class BrowseVehicles extends Vue {
     // if (!this.$store.getters.isAuthenticated) {
     //   this.$bvModal.show('modal-1');
     // }
-
     // Testing
     const accessToken = this.getAccessTokenFromUrl();
     if (accessToken !== 'null') {

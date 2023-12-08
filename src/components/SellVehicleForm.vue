@@ -2,6 +2,7 @@
 import {
   Vue, Component, Prop, Mixins,
 } from 'vue-property-decorator';
+import { mapGetters } from 'vuex';
 import { readonly } from 'vue';
 import axios from 'axios';
 import Car from '@/models/Car';
@@ -9,7 +10,18 @@ import Trader from '@/models/Trader';
 import GlobalMixin from '@/mixins/global-mixin';
 // ADd the JS script for auth.
 
-@Component({})
+@Component({
+  computed: {
+    ...mapGetters(['isAuthenticated']),
+  },
+  watch: {
+    isAuthenticated(value) {
+      if (!value) {
+        this.$router.push('/signin');
+      }
+    },
+  },
+})
 export default class SellVehicleForm extends Mixins(GlobalMixin) {
   @Prop({ type: Car, validator: (c) => c instanceof Car })
   readonly car!: Car;
@@ -158,6 +170,7 @@ export default class SellVehicleForm extends Mixins(GlobalMixin) {
     };
   }
 }
+
 
 </script>
 <template>

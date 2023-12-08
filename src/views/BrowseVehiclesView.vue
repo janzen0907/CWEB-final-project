@@ -23,6 +23,8 @@ export default class BrowseVehicles extends Mixins(GlobalMixin) {
     return this.$refs.carCard.localItems;
   }
 
+
+
   fields = [
     { key: 'id', sortable: true },
     { key: 'make', sortable: true },

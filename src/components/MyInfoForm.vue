@@ -3,6 +3,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator';
 import axios from 'axios';
 import Car from '@/models/Car';
 import Trader from '@/models/Trader';
+// import { EventBus } from '@/store/EventBus';
 
 @Component({})
 export default class MyInfoForm extends Vue {
@@ -16,10 +17,18 @@ export default class MyInfoForm extends Vue {
 
   traders: Trader = new Trader();
 
-  handleDelete() {
-    axios.delete(`http://localhost:3000/traders/${this.traders.email}`, {});
+  async handleDelete() {
+    try {
+      const response = await axios.delete(`http://localhost:3000/traders/${this.traders.email}`);
+      // When deleting a user it breaks the browse page until the backend is restarted
+      // i tried using VueX but im struggling with it and i tried an event bus that didnt seem to work.
+      // EventBus.$emit('account-deleted', this.traders.email);
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
+
 
 
 // A method to delete user from DB based on email
@@ -49,11 +58,18 @@ export default class MyInfoForm extends Vue {
       </b-form-group>
       <!--      TODO: make this centered-->
       <b-row class="justify-content-center">
-        <b-button class="m-2" variant="danger" @click="handleDelete">DELETE YOUR ACCOUNT</b-button>
+        <b-button class="m-2" variant="danger" v-b-modal:modal-delete>DELETE YOUR ACCOUNT</b-button>
       </b-row>
 
     </b-form>
-
+    <b-modal
+      id="modal-delete"
+      title="Are you sure you want to delete your account?"
+      @ok="handleDelete">
+      <p>Click Delete if you would like to delete your account. This will get rid of any cars you
+        have posted!</p>
+      <template #modal-ok>Delete</template>
+    </b-modal>
   </div>
 </template>
 
