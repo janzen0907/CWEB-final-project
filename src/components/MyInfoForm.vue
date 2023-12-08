@@ -1,12 +1,12 @@
 <script lang="ts">
-import {Vue, Component, Prop, Mixins} from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-property-decorator';
 import axios from 'axios';
 import Car from '@/models/Car';
 import Trader from '@/models/Trader';
-import GlobalMixin from "@/mixins/global-mixin";
+
 
 @Component({})
-export default class MyInfoForm extends Mixins(GlobalMixin) {
+export default class MyInfoForm extends Vue {
   @Prop({ type: Car, validator: (c) => c instanceof Car })
   readonly car!: Car;
 
@@ -16,7 +16,6 @@ export default class MyInfoForm extends Mixins(GlobalMixin) {
   cars: Car = new Car();
 
   traders: Trader = new Trader();
-
   /**
    * A method to delete user from DB based on email
    * Please reload the backend when deleting
@@ -25,18 +24,23 @@ export default class MyInfoForm extends Mixins(GlobalMixin) {
     try {
       const response = await axios.delete(`http://localhost:3000/traders/${this.traders.email}`);
       // When deleting a user it breaks the browse page until the backend is restarted
-      // I tried using VueX but im struggling with it and I tried an event bus that didn't seem to work.
-    } catch (error) {
-      console.error(error);
-    }
+      // i tried using VueX but im struggling with it and i tried an event bus that didnt seem to work.
+  } catch (error) {
+    console.error(error);
+  }
+
   }
 }
 
+
+
 </script>
 <template>
+
   <div class="m-auto border">
     <h1 class="text-center">My Info</h1>
     <p class="mb-1 text-center">Delete your account by entering your email</p>
+    <p>This currently breaks the entire backend. Reload backend to "fix"</p>
     <b-form>
       <b-form-group
         label="Email"
@@ -46,6 +50,7 @@ export default class MyInfoForm extends Mixins(GlobalMixin) {
         content-cols-sm
         content-cols-lg="5"
         label-for="email-horizontal">
+
         <b-input-group>
           <b-form-input
             id="email-horizontal"
@@ -57,6 +62,7 @@ export default class MyInfoForm extends Mixins(GlobalMixin) {
       <b-row class="justify-content-center">
         <b-button class="m-2" variant="danger" v-b-modal:modal-delete>DELETE YOUR ACCOUNT</b-button>
       </b-row>
+
     </b-form>
     <b-modal
       id="modal-delete"
@@ -68,6 +74,7 @@ export default class MyInfoForm extends Mixins(GlobalMixin) {
     </b-modal>
   </div>
 </template>
+
 
 <style scoped>
 

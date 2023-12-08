@@ -1,16 +1,14 @@
 <script lang="ts">
-import {Vue, Component, Prop, Mixins} from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-property-decorator';
 import axios from 'axios';
 import oauthSignIn from '@/assets/GoogleAuth';
 import Car from '@/models/Car';
 import Trader from '@/models/Trader';
 import store from '@/store';
-import GlobalMixin from "@/mixins/global-mixin";
 
-// eslint-disable-next-line import/no-absolute-path,@typescript-eslint/no-var-requires
 
 @Component({})
-export default class BrowseVehicles extends Mixins(GlobalMixin) {
+export default class BrowseVehicles extends Vue {
   //   Add the props in as needed everything to fill this will be an API call to the DB
   @Prop({ type: Car, validator: (c) => c instanceof Car })
   readonly car!: Car;
@@ -34,15 +32,13 @@ export default class BrowseVehicles extends Mixins(GlobalMixin) {
     this.loading = false;
   }
 
-  /**
-   * Parsing the access token from the url
-   */
+
+  // Testing
   getAccessTokenFromUrl() {
     // Get the access token for the user from google
     const hash = window.location.hash.substring(1);
     const urlParams = new URLSearchParams(hash);
     const accessToken = urlParams.get('access_token');
-    store.getters.setAccessToken(store.state, accessToken);
     console.log(`Access Token: ${accessToken}`);
     return accessToken;
   }
@@ -59,7 +55,6 @@ export default class BrowseVehicles extends Mixins(GlobalMixin) {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log('Google response: ', data);
         console.log(`User's Email:${data.email}`);
         console.log(`User's Name: ${data.name}`);
         console.log(accessToken);
@@ -80,11 +75,10 @@ export default class BrowseVehicles extends Mixins(GlobalMixin) {
     const accessToken = this.getAccessTokenFromUrl();
     if (accessToken !== 'null') {
       localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('accessToken', accessToken + '');
       this.getUserInfo(accessToken);
     }
-
   }
+
 
   /**
    * This method checks if they are in the Trader DB
@@ -106,7 +100,7 @@ export default class BrowseVehicles extends Mixins(GlobalMixin) {
         name: newName,
       })
         // We should probably change this eventually but for now just ignore the 500
-        // It is because a user with that email is already in the DB
+        // its because a user with that email is already in the DB
         .catch((err) => {
           if (err.response && err.response.status === 500) {
             console.log('Ignore the error');
@@ -160,6 +154,7 @@ export default class BrowseVehicles extends Mixins(GlobalMixin) {
     //   console.error('Error fetching/updating upvotes:', error);
     // }
 
+
     // async postLikes(upVotes: number, id: number) {
     //   try {
     //     await axios.put(`http://localhost:3000/cars/${id}`, {
@@ -176,10 +171,13 @@ export default class BrowseVehicles extends Mixins(GlobalMixin) {
    */
   mounted() {
     this.fetchCarData();
+
     const accessToken = this.getAccessTokenFromUrl();
     if (accessToken !== 'null') {
       this.getUserInfo(accessToken);
-    } else { /* empty */}
+    } else { /* empty */
+    }
+
   }
 }
 
@@ -213,22 +211,26 @@ export default class BrowseVehicles extends Mixins(GlobalMixin) {
             <b-row>
               <b-col cols="6">
                 <p>Seller Name: {{ carLoop.traderName }}</p>
+
               </b-col>
               <b-col cols="6">
                 <label for="rating-inline">Seller Rating:</label>
-                <!--                TODO: Get rating from DB per seller - not implemented-->
+                <!--                TODO: Get rating from DB per seller-->
                 <b-form-rating id="rating-inline" inline value="4" :readonly="true" />
               </b-col>
             </b-row>
             <b-row>
               <b-col cols="6">
                 <b-button class="m-3" @click="like" variant="info">
+
+
                   <b-icon icon="hand-thumbs-up" />
                   <p>{{ carLoop.numUpVotes }}</p>
                 </b-button>
+
               </b-col>
               <b-col cols="6">
-                <!--  TODO:    Write the dislike method - not implemented-->
+                <!--  TODO:    Write the dislike method-->
                 <b-button class="m-3" @click="dislike" variant="danger">
                   <b-icon icon="hand-thumbs-down" />
                   <p>{{ carLoop.numDownVotes }}</p>
@@ -236,8 +238,6 @@ export default class BrowseVehicles extends Mixins(GlobalMixin) {
               </b-col>
             </b-row>
           </b-card-text>
-          <!--    DONE: Add seller information, buttons and upvotes and downvotes-->
-          <!--          DONE: Going to need another loop for seller information -->
         </b-card>
       </b-col>
     </b-row>
@@ -246,6 +246,8 @@ export default class BrowseVehicles extends Mixins(GlobalMixin) {
       <!--                  Google sign in method-->
       <template #modal-ok>Sign in</template>
     </b-modal>
+    <!--    hand-thumbs-up-->
+    <!--hand-thumbs-down-->
   </div>
 </template>
 <style scoped/>
